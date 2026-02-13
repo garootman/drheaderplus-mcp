@@ -1,2 +1,2 @@
-# deheaderplus-mcp
+# drheaderplus-mcp
 MCP sever for drHeaderPlus library
