@@ -1,18 +1,17 @@
 """DrHeaderPlus MCP Server."""
 
-from mcp.server.mcpserver import MCPServer
+from mcp.server.fastmcp import FastMCP
 
 from drheader import Drheader
 from drheader.report import Finding
 from drheader.utils import PRESETS, preset_rules
 
-mcp = MCPServer(
+mcp = FastMCP(
     name="drheaderplus",
     instructions=(
         "Security header auditing tool. Scan URLs or analyze raw headers "
         "against security best practices (OWASP, CSP, HSTS, cookie flags, CORS)."
     ),
-    version="0.1.0",
 )
 
 
