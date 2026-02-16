@@ -4,6 +4,129 @@ MCP server for [DrHeaderPlus](https://github.com/garootman/drheaderplus) — aud
 
 Scans URLs or analyzes raw headers against security best practices: OWASP, CSP, HSTS, cookie flags, CORS misconfiguration, and more.
 
+## Quick Start
+
+Install and run with zero configuration:
+
+```bash
+uvx drheaderplus-mcp
+```
+
+Or install via pip:
+
+```bash
+pip install drheaderplus-mcp
+```
+
+Then add it to your AI assistant:
+
+**Claude Code:**
+```bash
+claude mcp add drheaderplus -- uvx drheaderplus-mcp
+```
+
+**Claude Desktop** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "drheaderplus": {
+      "command": "uvx",
+      "args": ["drheaderplus-mcp"]
+    }
+  }
+}
+```
+
+**VS Code** (`.vscode/mcp.json`):
+```json
+{
+  "servers": {
+    "drheaderplus": {
+      "command": "uvx",
+      "args": ["drheaderplus-mcp"]
+    }
+  }
+}
+```
+
+## Usage Examples
+
+### Scan a URL for security header issues
+
+```
+Use drheaderplus to scan https://example.com for security header issues
+```
+
+The `scan_url` tool fetches the headers and returns findings:
+
+```json
+[
+  {
+    "rule": "Strict-Transport-Security",
+    "severity": "high",
+    "message": "Header not included in response",
+    "value": ""
+  },
+  {
+    "rule": "Content-Security-Policy",
+    "severity": "high",
+    "message": "Header not included in response",
+    "value": ""
+  },
+  {
+    "rule": "X-Content-Type-Options",
+    "severity": "medium",
+    "message": "Header not included in response",
+    "value": ""
+  }
+]
+```
+
+### Analyze headers you already have
+
+```
+Use drheaderplus analyze_headers with these headers:
+{
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "Content-Security-Policy": "default-src 'self'",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY"
+}
+```
+
+Returns an empty list `[]` when all headers pass validation, or a list of findings for any issues detected.
+
+### Scan with strict OWASP preset
+
+```
+Use drheaderplus to scan https://example.com with the owasp-asvs-v14 preset
+```
+
+The `owasp-asvs-v14` preset enforces OWASP ASVS 4.0 V14 compliance and will flag more issues than the default ruleset.
+
+### Bulk scan multiple URLs
+
+```
+Use drheaderplus to scan these URLs: https://example.com, https://example.org
+```
+
+Returns per-URL results. Individual failures don't stop the batch:
+
+```json
+[
+  {
+    "url": "https://example.com",
+    "issues": 3,
+    "findings": [{"rule": "Strict-Transport-Security", "severity": "high", "message": "..."}]
+  },
+  {
+    "url": "https://unreachable.example",
+    "error": "Connection refused",
+    "findings": []
+  }
+]
+```
+
 ## Available Tools
 
 | Tool | Description |
@@ -17,7 +140,7 @@ Scans URLs or analyzes raw headers against security best practices: OWASP, CSP, 
 
 **`scan_url`**
 - `url` (required): The URL to scan (must include scheme, e.g. `https://example.com`)
-- `preset` (optional): Ruleset preset name
+- `preset` (optional): Ruleset preset name (use `list_presets` to see available options)
 - `cross_origin_isolated` (optional): Enable COEP/COOP checks (default: false)
 
 **`analyze_headers`**
@@ -30,76 +153,49 @@ Scans URLs or analyzes raw headers against security best practices: OWASP, CSP, 
 - `preset` (optional): Ruleset preset name
 - `cross_origin_isolated` (optional): Enable COEP/COOP checks (default: false)
 
-## Installation
+**`list_presets`**
 
-### Using uvx (recommended, no install needed)
+No parameters. Returns a dict mapping preset names to their file paths.
 
-```bash
-uvx drheaderplus-mcp
-```
+### Finding Format
 
-### Using pip
-
-```bash
-pip install drheaderplus-mcp
-```
-
-## Configuration
-
-### Claude Desktop
-
-Add to your `claude_desktop_config.json`:
-
-**Using uvx:**
-```json
-{
-  "mcpServers": {
-    "drheaderplus": {
-      "command": "uvx",
-      "args": ["drheaderplus-mcp"]
-    }
-  }
-}
-```
-
-**Using pip installation:**
-```json
-{
-  "mcpServers": {
-    "drheaderplus": {
-      "command": "drheaderplus-mcp"
-    }
-  }
-}
-```
-
-### Claude Code
-
-```bash
-claude mcp add drheaderplus -- uvx drheaderplus-mcp
-```
-
-### VS Code
-
-Add to your `.vscode/mcp.json`:
+Each finding returned by `scan_url`, `analyze_headers`, and `scan_bulk` has this structure:
 
 ```json
 {
-  "servers": {
-    "drheaderplus": {
-      "command": "uvx",
-      "args": ["drheaderplus-mcp"]
-    }
-  }
+  "rule": "Strict-Transport-Security",
+  "severity": "high",
+  "message": "max-age should be at least 31536000",
+  "value": "max-age=100"
 }
 ```
+
+| Field | Description |
+|-------|-------------|
+| `rule` | The HTTP header or security rule that was checked |
+| `severity` | `high`, `medium`, or `low` — use this to prioritize fixes |
+| `message` | Human-readable description of the issue |
+| `value` | The actual header value that triggered the finding (empty string if header is missing) |
 
 ## Debugging
 
-Use the MCP inspector to test the server:
+Use the MCP inspector to test the server interactively:
 
 ```bash
 npx @modelcontextprotocol/inspector uvx drheaderplus-mcp
+```
+
+## Development
+
+```bash
+# Install in dev mode with all dependencies
+pip install -e ".[dev]"
+
+# Run all tests (runs on both asyncio and trio backends)
+python -m pytest tests/ -v
+
+# Run the server locally
+drheaderplus-mcp
 ```
 
 ## License

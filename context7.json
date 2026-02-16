@@ -1,4 +1,21 @@
 {
+  "$schema": "https://context7.com/schema/context7.json",
   "url": "https://context7.com/garootman/drheaderplus-mcp",
-  "public_key": "pk_vtYwJLWL0kDCuGUKRPhTf"
+  "public_key": "pk_vtYwJLWL0kDCuGUKRPhTf",
+  "projectTitle": "DrHeaderPlus MCP",
+  "description": "MCP server that audits HTTP security headers from AI assistants. Scans URLs or analyzes raw headers against OWASP, CSP, HSTS, cookie flags, and CORS best practices.",
+  "folders": ["docs"],
+  "excludeFolders": ["work_docs", "tests", ".github"],
+  "excludeFiles": ["CLAUDE.md", "CHANGELOG.md", "LICENSE"],
+  "rules": [
+    "scan_url requires a full URL with scheme (e.g. https://example.com), not just a domain name.",
+    "Use analyze_headers instead of scan_url when you already have the HTTP response headers to avoid an extra network call.",
+    "Use list_presets to discover available rulesets before passing a preset name to scan_url or analyze_headers.",
+    "The owasp-asvs-v14 preset enforces strict OWASP ASVS 4.0 V14 compliance and will flag more issues than the default ruleset.",
+    "Set cross_origin_isolated=true only when auditing sites that require Cross-Origin-Embedder-Policy and Cross-Origin-Opener-Policy headers.",
+    "scan_bulk handles individual URL failures gracefully — a failing URL returns an error message without stopping the entire batch.",
+    "Each finding dict contains rule, severity, message, and value fields. Use severity to prioritize fixes (high > medium > low).",
+    "Install with uvx for zero-config usage: uvx drheaderplus-mcp. No pip install needed.",
+    "The server uses stdio transport. Configure it in Claude Desktop, Claude Code, or VS Code via their MCP server settings."
+  ]
 }
