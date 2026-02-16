@@ -27,8 +27,15 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["pytest>=8.0.0", "pytest-asyncio>=1.0.0", "responses>=0.25", "anyio>=4.0"]
+dev = ["pytest>=8.0.0", "pytest-asyncio>=1.0.0", "responses>=0.25", "anyio>=4.0", "ruff>=0.9", "pre-commit>=4.0", "ty"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "S"]
+ignore = ["S101"]

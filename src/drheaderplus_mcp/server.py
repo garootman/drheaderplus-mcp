@@ -1,10 +1,9 @@
 """DrHeaderPlus MCP Server."""
 
-from mcp.server.fastmcp import FastMCP
-
 from drheader import Drheader
 from drheader.report import Finding
 from drheader.utils import PRESETS, preset_rules
+from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP(
     name="drheaderplus",

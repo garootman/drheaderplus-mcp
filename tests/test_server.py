@@ -51,7 +51,10 @@ async def test_list_presets():
 async def test_analyze_headers_clean():
     """Well-configured headers produce few findings for the checked headers."""
     headers = {
-        "Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "Content-Security-Policy": (
+            "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self';"
+            " font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        ),
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
@@ -168,9 +171,7 @@ async def test_scan_bulk():
         responses.add(responses.HEAD, url, headers={"X-Content-Type-Options": "nosniff"})
         responses.add(responses.GET, url, headers={})
 
-    result = await mcp.call_tool(
-        "scan_bulk", {"urls": ["https://a.example.com", "https://b.example.com"]}
-    )
+    result = await mcp.call_tool("scan_bulk", {"urls": ["https://a.example.com", "https://b.example.com"]})
     data = _parse_result(result)
     assert len(data) == 2
     assert data[0]["url"] == "https://a.example.com"
@@ -187,9 +188,7 @@ async def test_scan_bulk_partial_failure():
     responses.add(responses.GET, "https://ok.example.com", headers={})
     responses.add(responses.HEAD, "https://fail.example.com", body=ConnectionError("Connection refused"))
 
-    result = await mcp.call_tool(
-        "scan_bulk", {"urls": ["https://ok.example.com", "https://fail.example.com"]}
-    )
+    result = await mcp.call_tool("scan_bulk", {"urls": ["https://ok.example.com", "https://fail.example.com"]})
     data = _parse_result(result)
     assert len(data) == 2
     assert "findings" in data[0]
