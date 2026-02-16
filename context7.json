@@ -16,6 +16,8 @@
     "scan_bulk handles individual URL failures gracefully — a failing URL returns an error message without stopping the entire batch.",
     "Each finding dict contains rule, severity, message, and value fields. Use severity to prioritize fixes (high > medium > low).",
     "Install with uvx for zero-config usage: uvx drheaderplus-mcp. No pip install needed.",
-    "The server uses stdio transport. Configure it in Claude Desktop, Claude Code, or VS Code via their MCP server settings."
+    "The server uses stdio transport. Configure it in Claude Desktop, Claude Code, or VS Code via their MCP server settings.",
+    "See the security headers guide for how to fix each finding with nginx, Apache, Node.js/Express, or Cloudflare config snippets.",
+    "Use analyze_headers in CI/CD pipelines to validate header configuration before deployment without making network requests."
   ]
 }
